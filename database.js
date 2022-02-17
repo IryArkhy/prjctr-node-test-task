@@ -11,7 +11,6 @@ const database = {
         const user = users.find((user) => user.id === id);
         if (!user) {
             throw new Error(`User with id=${id} not found`);
-            return null;
         } else {
             return user;
         }
@@ -25,7 +24,6 @@ const database = {
         const userBook = usersBooks[userId];
         if (!userBook) {
             throw new Error(`Set of books related to userId=${userId} not found`);
-            return null;
         } else {
             return userBook;
         }

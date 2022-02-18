@@ -1,82 +1,109 @@
 const database = {
-    getUser: async (id) => {
-        const users = [{
-            id: 1,
-            name: 'Robert',
-        }, {
-            id: 2,
-            name: 'John'
-        }];
-        
-        const user = users.find((user) => user.id === id);
-        if (!user) {
-            throw new Error(`User with id=${id} not found`);
-        } else {
-            return user;
-        }
-    },
-    getUsersBook: async (userId) => {
-        const usersBooks = {
-            1: [],
-            2: [1, 2],
-        };
+  getUser: (id, callback) => {
+    const users = [
+      {
+        id: 1,
+        name: "Robert"
+      },
+      {
+        id: 2,
+        name: "John"
+      }
+    ];
 
-        const userBook = usersBooks[userId];
-        if (!userBook) {
-            throw new Error(`Set of books related to userId=${userId} not found`);
-        } else {
-            return userBook;
-        }
-    },
-    buyBook: async (id) => {
-        const books = [{
-            id: 1,
-            name: 'Art of war'
-        }, {
-            id: 2,
-            name: 'Hunger games'
-        }, {
-            id: 3,
-            name: '1984'
-        }];
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      callback(`User with id=${id} not found`);
+    } else {
+      callback(null, user);
+    }
+  },
+  getUsersBook: (userId, callback) => {
+    const usersBooks = {
+      1: [],
+      2: [1, 2]
+    };
 
-        const book = books.find((book) => book.id === id);
-        if (!book) {
-            throw new Error(`Book with id=${id} not found`);
-        } else {
-            return true;
-        }
-    },
+    const userBook = usersBooks[userId];
+    if (!userBook) {
+      callback(`Set of books related to userId=${userId} not found`);
+    } else {
+      callback(null, userBook);
+    }
+  },
+  buyBook: (id, callback) => {
+    const books = [
+      {
+        id: 1,
+        name: "Art of war"
+      },
+      {
+        id: 2,
+        name: "Hunger games"
+      },
+      {
+        id: 3,
+        name: "1984"
+      }
+    ];
+
+    const book = books.find((book) => book.id === id);
+    if (!book) {
+      callback(`Book with id=${id} not found`);
+    } else {
+      callback(null, true);
+    }
+  }
 };
 
+const getUser = (userId) =>
+  new Promise((resolve, reject) => {
+    database.getUser(userId, (error, user) => {
+      if (error) reject(error);
 
+      resolve(user);
+    });
+  });
+
+const checkUserBook = (userId, bookId) =>
+  new Promise((resolve, reject) => {
+    database.getUsersBook(userId, (error, userBooks) => {
+      if (error) reject(error);
+
+      if (userBooks.includes(bookId)) {
+        reject(`User already has book with id=${bookId}`);
+      }
+      resolve(userBooks);
+    });
+  });
+
+const buyBook = (bookId) =>
+  new Promise((resolve, reject) => {
+    database.buyBook(bookId, (error) => {
+      if (error) reject(error);
+
+      resolve("Success");
+    });
+  });
 
 const buyBookForUser = async (bookId, userId) => {
-  try {
-    const user = await database.getUser(userId);
-    
-    if (user) {
-      const userBooks = await database.getUsersBook(userId);
-      
-      if(userBooks.includes(bookId))
-        throw new Error(`User already has book with id=${bookId}`);
-      
-      await database.buyBook(bookId);
-      console.log("Success");
-    } 
-  } catch (error) {
-    console.log(error.message);
+  const user = await getUser(userId);
+
+  if (user) {
+    await checkUserBook(userId, bookId);
+
+    return await buyBook(bookId);
   }
-}
+};
 
 (async () => {
- await buyBookForUser(1,1);
+  await buyBookForUser(1, 1).then(console.log).catch(console.error);
 
- await buyBookForUser(1,2);
+  await buyBookForUser(1, 2).then(console.log).catch(console.error);
 
- await buyBookForUser(3,2);
+  await buyBookForUser(3, 2).then(console.log).catch(console.error);
 
- await buyBookForUser(5,2);
+  await buyBookForUser(5, 2).then(console.log).catch(console.error);
 
- await buyBookForUser(1,3);
-})()
+  await buyBookForUser(1, 3).then(console.log).catch(console.error);
+})();

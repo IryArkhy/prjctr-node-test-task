@@ -96,14 +96,12 @@ const buyBookForUser = async (bookId, userId) => {
   }
 };
 
-(async () => {
-  await buyBookForUser(1, 1).then(console.log).catch(console.error);
+buyBookForUser(1, 1).then(console.log).catch(console.error);
 
-  await buyBookForUser(1, 2).then(console.log).catch(console.error);
+buyBookForUser(1, 2).then(console.log).catch(console.error);
 
-  await buyBookForUser(3, 2).then(console.log).catch(console.error);
+buyBookForUser(3, 2).then(console.log).catch(console.error);
 
-  await buyBookForUser(5, 2).then(console.log).catch(console.error);
+buyBookForUser(5, 2).then(console.log).catch(console.error);
 
-  await buyBookForUser(1, 3).then(console.log).catch(console.error);
-})();
+buyBookForUser(1, 3).then(console.log).catch(console.error);
